@@ -47,7 +47,7 @@ def action(state):
 def collect_bam_info(state):
 
     bam_info = defaultdict(lambda: defaultdict(str))
-    for dir in state.paths.ispeaks_dirs:
+    for dir in state.paths.mustache_dirs:
         sam_dir = os.path.join(dir, 'sams', 'taxon_sorted_sams_dir')
         if not os.path.isdir(sam_dir):
             raise TypeError("The directory architecture of the ISPeaks folder %s is unexpected." % basename(dir))

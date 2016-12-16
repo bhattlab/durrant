@@ -12,7 +12,7 @@ class MergeState(StateSuperClass):
         self.which = 'merge'
 
 
-        self.paths = MergePaths(ispeaks_dirs=args['mustache_directories'],
+        self.paths = MergePaths(mustache_dirs=args['mustache_directories'],
                                 output_dir=args['output_dir'],
                                 taxondb = self.config['taxondb'])
 
@@ -21,11 +21,11 @@ class MergeState(StateSuperClass):
         self.logger = Log(self.paths.out_dir)
 
 class MergePaths(PathsSuperClass):
-    def __init__(self, ispeaks_dirs, output_dir, taxondb):
+    def __init__(self, mustache_dirs, output_dir, taxondb):
         PathsSuperClass.__init__(self, output_dir, taxondb)
 
         # Directories
-        self.ispeaks_dirs = [self.makedir(dir) for dir in ispeaks_dirs]
+        self.mustache_dirs = [self.makedir(dir) for dir in mustache_dirs]
         self.merged_bam_dir = self.makedir(join(self.out_dir, 'bams_merged'))
         self.merged_peaks_dir = self.makedir(join(self.out_dir, 'peaks_merged'))
         self.results_dir = self.makedir(join(self.out_dir, 'results'))

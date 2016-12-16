@@ -10,7 +10,7 @@ def mustache_directory(path):
         if not os.path.isdir(path): raise TypeError()
         return os.path.abspath(path)
     except:
-        raise argparse.ArgumentTypeError('Please give paths to valid ispeaks output directories files.')
+        raise argparse.ArgumentTypeError('Please give paths to valid mustache output directories files.')
 
 def output_folder(path):
     try:

@@ -21,7 +21,7 @@ class PathsSuperClass:
 
 class SettingsSuperClass:
     def __init__(self):
-        self.path_delim = '-_-ispeaks-_-'
+        self.path_delim = '-_-mustache-_-'
         self.peak_extension = 1000
 
         self.nodes_child_parent_overwrite = [('1263037', '47678')]
