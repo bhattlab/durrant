@@ -3,7 +3,7 @@ import os, sys
 
 ref_basenames = set()
 
-def ispeaks_directory(path):
+def mustache_directory(path):
 
     try:
         if not os.path.isdir(path): raise TypeError()

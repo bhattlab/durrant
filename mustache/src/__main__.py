@@ -18,15 +18,16 @@ from mod.findsites import argparseTypes as findsites_argparseTypes
 from mod.shared.log import SimpleLog
 
 def main(args):
-
-    if args['which'] == 'call':
+    if args['which'] == 'config':
+        pass
+    elif args['which'] == 'call':
 
         callstate = call_state.CallState(args)
         logger = callstate.logger
 
         logger.info("Here are the arguments as they were given:\n\n%s\n" % pformat(args))
 
-        logger.info("Executing the ISPeaks call protocol...")
+        logger.info("Executing the Mustache call protocol...")
 
         call_executive.action(callstate)
 
@@ -35,7 +36,7 @@ def main(args):
         logger = mergestate.logger
         logger.info("Here are the arguments as they were given:\n\n%s\n" % pformat(args))
 
-        logger.info("Executing the ISPeaks merge protocol...")
+        logger.info("Executing the Mustache merge protocol...")
 
         merge_executive.action(mergestate)
 
@@ -43,7 +44,7 @@ def main(args):
 
         logger = SimpleLog()
         logger.info("Here are the arguments as they were given:\n\n%s\n" % pformat(args))
-        logger.info("Executing the ISPeaks find-sites protocol...")
+        logger.info("Executing the Mustache find-sites protocol...")
 
         findsites_executive.action(args, logger)
 
@@ -51,7 +52,7 @@ def main(args):
 
         logger = SimpleLog()
         logger.info("Here are the arguments as they were given:\n\n%s\n" % pformat(args))
-        logger.info("Executing the ISPeaks strand protocol...")
+        logger.info("Executing the Mustache strand protocol...")
 
         strand_executive.action(args, logger)
 
@@ -68,20 +69,22 @@ if __name__ == "__main__":
     # setup the option parser
     parser = argparse.ArgumentParser(description='')
 
-    subparsers = parser.add_subparsers(help="The argument specifying the type of analysis: single, "
-                                            "or merged")
+    subparsers = parser.add_subparsers(help="The argument specifying the type of analysis")
 
-    parser_call = subparsers.add_parser('call', help='Run ISPeaks on a single fastq file to call al lthe peaks')
+    parser_config = subparsers.add_parser('config', help='Configure Mustache to run properly on your system.')
+    parser_config.set_defaults(which="config")
+    
+    parser_call = subparsers.add_parser('call', help='Run Mustache on a single fastq file to call all the insertion events.')
     parser_call.set_defaults(which="call")
 
-    parser_merge = subparsers.add_parser('merge', help='Run ISPeaks on multiple ISPeaks output folders.')
+    parser_merge = subparsers.add_parser('merge', help='Run Mustache on multiple Mustache output folders.')
     parser_merge.set_defaults(which="merge")
 
-    parser_findsite = subparsers.add_parser('find-sites', help='Identify the specific sites of insertion using ISPeaks '
+    parser_findsite = subparsers.add_parser('find-sites', help='Identify the specific sites of insertion using Mustache '
                                                           'insertion-flanking alignments and specific peaks of interest.')
     parser_findsite.set_defaults(which="findsites")
 
-    parser_strand = subparsers.add_parser('strand', help='')
+    parser_strand = subparsers.add_parser('strand', help='Get the strand orientation of a given insertion sequence.')
     parser_strand.set_defaults(which="strand")
 
     # SINGLE arguments
@@ -127,14 +130,10 @@ if __name__ == "__main__":
                                 'in the format \"<reference-fasta1> <reference-fasta2>\"')
 
     parser_call.add_argument('-nodes', '--taxon-nodes', required=False, type=call_argparseTypes.taxon_nodes,
-                             default=[call_argparseTypes.taxon_nodes(os.path.abspath(os.path.join(data_dir, "TaxonomyDatabase/nodes.dmp"))),
-                                      call_argparseTypes.taxon_nodes(os.path.abspath(os.path.join(data_dir, "TaxonomyDatabase/merged.dmp")))],
                              help='Location of the NCBI Taxonomy Database nodes.dmp and/or merged.dmp files',
                              nargs='+')
 
     parser_call.add_argument('-names', '--taxon-names', required=False, type=call_argparseTypes.taxon_names,
-                             default=call_argparseTypes.taxon_nodes(
-                                   os.path.abspath(os.path.join(data_dir, "TaxonomyDatabase/names.dmp"))),
                              help='Location of the NCBI Taxonomy Database names.dmp')
 
     parser_call.add_argument('-n', '--num_reads', required=False, type=int,
@@ -147,10 +146,10 @@ if __name__ == "__main__":
                              ' of available processors) / 2.')
 
     # MERGED arguments
-    parser_merge.add_argument('-d', '--ispeaks_directories', required=True,
+    parser_merge.add_argument('-d', '--mustache_directories', required=True,
                               nargs='+', action=merge_argparseTypes.minimum_length(2),
-                              type=merge_argparseTypes.ispeaks_directory,
-                              help='Include 2 or more ISPeaks output directories to merge')
+                              type=merge_argparseTypes.mustache_directory,
+                              help='Include 2 or more Mustache output directories to merge')
 
     parser_merge.add_argument('-o', '--output-dir', required=True, type=merge_argparseTypes.output_folder,
                               help='Specify the output folder to create. If already created, it must be empty.')
@@ -188,10 +187,6 @@ if __name__ == "__main__":
     parser_strand.add_argument('-r', '--range', required=True, nargs=2, type=int)
     parser_strand.add_argument('-isr', '--insertion-reference-name', required=True, type=str)
     parser_strand.add_argument('--clip-genome-query-name', required=False, default=True, type = bool)
-
-
-
-
 
 
     args = parser.parse_args()
