@@ -1,6 +1,6 @@
 import argparse
 import os
-
+import json
 import misc
 
 ref_basenames = set()
@@ -94,3 +94,12 @@ def taxon_names(path):
         return os.path.abspath(path)
     except:
         raise argparse.ArgumentTypeError('Please give paths to valid taxonomy names file.')
+
+
+def config_file(path):
+    try:
+        if not os.path.isfile(path):raise TypeError()
+        config = json.load(open(path))
+        return os.path.abspath(path)
+    except:
+        raise argparse.ArgumentTypeError('There is no valid config file. Please run "python mustache config"...')

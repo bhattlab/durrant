@@ -1,4 +1,4 @@
-import misc, os
+import misc, os, json
 from ..shared.state_superclass import *
 from collections import defaultdict
 
@@ -9,14 +9,14 @@ class CallState(StateSuperClass):
         StateSuperClass.__init__(self)
 
         self.which = 'call'
+        self.config = dict(json.load(open(args['config'])))
 
         self.paths = CallPaths(fastq_files = args['fastqs'],
                            fastq_to_IS_algnmnts=['fastq1_to_IS.sam', 'fastq2_to_IS.sam'],
                            class_files = args['classifications'],
                            insertion_fasta=args['insertion_fasta'],
                            reference_genomes=args['reference_genomes'],
-                           taxon_nodes=args['taxon_nodes'],
-                           taxon_names=args['taxon_names'],
+                           taxondb=self.config['taxondb'],
                            outdir=args['output_dir'])
 
         self.settings = CallSettings(args['complete_class_exclusions'],
@@ -28,9 +28,9 @@ class CallState(StateSuperClass):
         self.logger = Log(self.paths.out_dir)
 
 class CallPaths(PathsSuperClass):
-    def __init__(self, fastq_files, fastq_to_IS_algnmnts, class_files, insertion_fasta, reference_genomes, taxon_nodes,
-                 taxon_names, outdir):
-        PathsSuperClass.__init__(self, outdir, taxon_nodes, taxon_names)
+    def __init__(self, fastq_files, fastq_to_IS_algnmnts, class_files, insertion_fasta, reference_genomes, taxondb,
+                 outdir):
+        PathsSuperClass.__init__(self, outdir, taxondb)
 
         # Directories
         self.sams_dir = self.makedir(os.path.join(outdir, 'sams'))

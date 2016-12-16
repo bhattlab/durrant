@@ -1,5 +1,6 @@
 import argparse
 import os, sys
+import json
 
 ref_basenames = set()
 
@@ -30,3 +31,12 @@ def minimum_length(nmin):
                 raise argparse.ArgumentTypeError(msg)
             setattr(args, self.dest, values)
     return RequiredLength
+
+
+def config_file(path):
+    try:
+        if not os.path.isfile(path): raise TypeError()
+        config = json.load(open(path))
+        return os.path.abspath(path)
+    except:
+        raise argparse.ArgumentTypeError('There is no valid config file. Please run "python mustache config"...')

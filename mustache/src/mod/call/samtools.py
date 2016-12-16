@@ -25,7 +25,6 @@ def bamsort(bamfile):
     prefix = os.path.join(os.path.dirname(bamfile), os.path.basename(bamfile).split('.')[0])
     bam_out = prefix+".bam"
     samtools_args = "samtools sort -T %s -o %s %s" % (prefix+".sorted", bam_out, prefix+".bam")
-    print samtools_args
     subprocess.call(samtools_args, shell=True)
     return bam_out
 

@@ -6,6 +6,7 @@ from mod.call import executive as call_executive
 from mod.merge import executive as merge_executive
 from mod.findsites import executive as findsites_executive
 from mod.strand import executive as strand_executive
+from mod.config import executive as config_executive
 
 
 from mod.call import state as call_state
@@ -18,8 +19,14 @@ from mod.findsites import argparseTypes as findsites_argparseTypes
 from mod.shared.log import SimpleLog
 
 def main(args):
+
     if args['which'] == 'config':
-        pass
+        current_dir = os.path.abspath(os.path.dirname(__file__))
+        data_dir = os.path.abspath(os.path.join(current_dir, "../data"))
+        if not os.path.isdir(data_dir): os.mkdir(data_dir)
+
+        config_executive.action(data_dir)
+
     elif args['which'] == 'call':
 
         callstate = call_state.CallState(args)
@@ -64,8 +71,8 @@ def main(args):
 
 if __name__ == "__main__":
 
-    current_dir = os.path.dirname(__file__)
-    data_dir = os.path.join(current_dir, "../data")
+    current_dir = os.path.abspath(os.path.dirname(__file__))
+    data_dir = os.path.abspath(os.path.join(current_dir, "../data"))
     # setup the option parser
     parser = argparse.ArgumentParser(description='')
 
@@ -129,12 +136,13 @@ if __name__ == "__main__":
                              help='Reference genomes to analyze in fasta format. Input must be '
                                 'in the format \"<reference-fasta1> <reference-fasta2>\"')
 
-    parser_call.add_argument('-nodes', '--taxon-nodes', required=False, type=call_argparseTypes.taxon_nodes,
-                             help='Location of the NCBI Taxonomy Database nodes.dmp and/or merged.dmp files',
-                             nargs='+')
+    parser_call.add_argument('--config', required=False, type=call_argparseTypes.config_file,
+                             default = os.path.join(data_dir, 'mustache.config'),
+                             help='Location of the NCBI Taxonomy Database')
 
-    parser_call.add_argument('-names', '--taxon-names', required=False, type=call_argparseTypes.taxon_names,
-                             help='Location of the NCBI Taxonomy Database names.dmp')
+    parser_call.add_argument('-taxondb', '--taxonomy-database', required=False, type=call_argparseTypes.taxon_nodes,
+                              help='Location of the NCBI Taxonomy Database')
+
 
     parser_call.add_argument('-n', '--num_reads', required=False, type=int,
                                help='The total number of paired-end reads. If not given, it will be calculated by counting'
@@ -154,18 +162,12 @@ if __name__ == "__main__":
     parser_merge.add_argument('-o', '--output-dir', required=True, type=merge_argparseTypes.output_folder,
                               help='Specify the output folder to create. If already created, it must be empty.')
 
-    parser_merge.add_argument('-nodes', '--taxon-nodes', required=False, type=call_argparseTypes.taxon_nodes,
-                             default=[call_argparseTypes.taxon_nodes(
-                                 os.path.abspath(os.path.join(data_dir, "TaxonomyDatabase/nodes.dmp"))),
-                                      call_argparseTypes.taxon_nodes(
-                                          os.path.abspath(os.path.join(data_dir, "TaxonomyDatabase/merged.dmp")))],
-                             help='Location of the NCBI Taxonomy Database nodes.dmp and/or merged.dmp files',
-                             nargs='+')
+    parser_merge.add_argument('-taxondb', '--taxonomy-database', required=False, type=call_argparseTypes.taxon_nodes,
+                             help='Location of the NCBI Taxonomy Database')
 
-    parser_merge.add_argument('-names', '--taxon-names', required=False, type=call_argparseTypes.taxon_names,
-                             default=call_argparseTypes.taxon_nodes(
-                                 os.path.abspath(os.path.join(data_dir, "TaxonomyDatabase/names.dmp"))),
-                             help='Location of the NCBI Taxonomy Database names.dmp')
+    parser_merge.add_argument('--config', required=False, type=merge_argparseTypes.config_file,
+                             default=os.path.join(data_dir, 'mustache.config'),
+                             help='Location of the NCBI Taxonomy Database')
 
     # Find-Site arguments
     parser_findsite.add_argument('-b', '--bam-file', required=True,

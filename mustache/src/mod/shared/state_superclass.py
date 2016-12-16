@@ -1,14 +1,23 @@
+import os
+
+
 class StateSuperClass:
     def __init__(self):
         pass
 
 class PathsSuperClass:
-    def __init__(self, outdir, taxon_nodes, taxon_names):
+    def __init__(self, outdir, taxondb):
         self.out_dir = self.makedir(outdir)
 
         # Files
-        self.taxon_nodes = taxon_nodes
-        self.taxon_names = taxon_names
+        self.taxon_nodes = [str(os.path.join(taxondb, 'nodes.dmp')), str(os.path.join(taxondb, 'merged.dmp'))]
+        self.taxon_names = str(os.path.join(taxondb, 'names.dmp'))
+
+
+    def makedir(self, path):
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        return os.path.abspath(path)
 
 class SettingsSuperClass:
     def __init__(self):
